@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>webSocketDemo</title>
+    <script th:src="@{../jquery.min.js}"></script>
+    <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.css" rel="stylesheet">
+</head>
+<body>
+<div>
+    <h2>WebSocketDemo</h2>
+    <div class="" style="margin-top: 10px">
+        <!--<form class="form-inline">-->
+        <div class="form-group">
+            <label class="sr-only">信息内容：</label>
+            <div class="input-group">
+                <input id="username" type="text" required class="form-control" placeholder="请输入名称">
+            </div>
+        </div>
+        <button class="btn btn-primary" onclick="connect()">连接</button>
+        <!--</form>-->
+        <!--<form class="form-inline">-->
+        <!--<div class="form-group">-->
+        <!--<label class="sr-only" for="writeMsg">信息内容：</label>-->
+        <!--<div class="input-group">-->
+        <!--<input type="text" class="form-control" required id="writeMsg" placeholder="请输入要发送的内容">-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<button type="submit" class="btn btn-primary" onclick="sendMsg()">发送</button>-->
+        <!--</form>-->
+    </div>
+    <div class="jumbotron" style="margin-top: 10px">
+        <h1>消息详情</h1>
+        <div id="content">
+
+        </div>
+    </div>
+</div>
+<script>
+    var ws = null;
+    var username = $('#username').val();
+
+    function connect() {
+        if (username != null) {
+            console.log("username:");
+            console.log(username);
+            $("#content").html('');
+            if ('WebSocket' in window) {
+                ws = new WebSocket("ws://127.0.0.1:8080/socketServer/" + $("#username").val());
+            }
+            else if ('MozWebSocket' in window) {
+                ws = new MozWebSocket("ws://127.0.0.1:8080/socketServer/" + $("#username").val());
+            }
+            else {
+                alert("该浏览器不支持websocket");
+            }
+
+
+            ws.onmessage = function (evt) {
+                var content = $("#content").html();
+                $("#content").html(content + '<div style="text-align: right;margin-bottom: 8px">\n' +
+                    '                        <p><q style="color: mediumorchid">服务端:</q><span>' + evt.data + '</span></p>\n' +
+                    '                    </div>\n' +
+                    '                    <br/>');
+            };
+
+            ws.onclose = function (evt) {
+                var content = $("#content").html();
+                $("#content").html(content + '<div style="margin-bottom: 8px">\n' +
+                    '                        <p><q style="color: coral">客户端:</q><span>连接中断</span></p>\n' +
+                    '                    </div>\n' +
+                    '                    <br/>');
+            };
+
+            ws.onopen = function (evt) {
+                $("#content").html('<div style="margin-bottom: 8px">\n' +
+                    '                        <p><q style="color: coral">客户端:</q><span>连接成功...</span></p>\n' +
+                    '                    </div>\n' +
+                    '                    <br/>');
+            };
+        } else {
+            alert("请输入您的昵称" + username);
+        }
+    }
+
+    // function sendMsg() {
+    //     ws.send($("#writeMsg").val());
+    //     var content = $("#content").html();
+    //     $("#content").html(content + '<div>\n' +
+    //         '                        <p><q style="color: coral">客户端:</q><span>' + $("#writeMsg").val() + '</span></p>\n' +
+    //         '                    </div>\n' +
+    //         '                    <br/>');
+    // }
+
+</script>
+</body>
+</html>
