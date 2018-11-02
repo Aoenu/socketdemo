@@ -68,11 +68,11 @@ public class SocketServer {
      * @param message
      * @param userId
      */
-    public static void sendMessage(Object message, String userId) {
+    public static void sendMessage(String message, String userId) {
         Session s = sessionPool.get(userId);
         if (s != null) {
             try {
-                s.getBasicRemote().sendObject(message);
+                s.getBasicRemote().sendText(message);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -86,7 +86,7 @@ public class SocketServer {
      * @param msg
      * @param persons 用户s
      */
-    public void sendMsg(Object msg, List<String> persons) {
+    public void sendMsg(String msg, List<String> persons) {
         for (String userId : persons) {
             sendMessage(msg, userId);
         }
